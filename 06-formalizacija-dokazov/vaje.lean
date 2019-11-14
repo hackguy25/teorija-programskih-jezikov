@@ -136,5 +136,6 @@ inductive term : kind -> Type
 --   cases t2,
 -- end
 
+
 end kind
 end hidden
