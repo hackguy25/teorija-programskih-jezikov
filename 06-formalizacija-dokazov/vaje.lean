@@ -13,7 +13,9 @@ namespace list
 notation x `::` xs := Cons x xs
 notation `[]` := Nil
 
-def join {A} : list A -> list A -> list A := sorry
+def join {A} : list A -> list A -> list A
+| [] ys := ys
+| (x :: xs) ys := x :: (join xs ys)
 
 notation xs `++` ys := join xs ys
 
@@ -21,8 +23,39 @@ theorem join_nil {A} (xs: list A) :
   xs ++ [] = xs 
 :=
 begin
-  sorry
+  induction xs,
+  {unfold join,},
+  unfold join,
+  rewrite xs_ih,
 end
+
+def reverse {A} : list A -> list A
+| [] := []
+| (x :: xs) := (reverse xs) ++ (x :: [])
+
+theorem join_assoc {A} (xs ys zs : list A):
+  xs ++ (ys ++ zs) = (xs ++ ys) ++ zs
+:=
+begin
+  induction xs,
+  unfold join,
+  unfold join,
+  rewrite xs_ih,
+end
+
+theorem reverse_join {A} (xs ys : list A):
+  reverse (xs ++ ys) = (reverse ys) ++ (reverse xs)
+:=
+begin
+  induction xs,
+  {unfold join, unfold reverse, rewrite join_nil,},
+  unfold join,
+  unfold reverse,
+  rewrite xs_ih,
+  rewrite join_assoc,
+end
+
+
 
 end list
 -------------------------------------------------------------------------------
@@ -32,7 +65,46 @@ end list
 -- uporabljate konstruktorje brez predpone, torej `Empty` namesto
 -- `tree.Empty`.
 
+inductive tree (A : Type) : Type
+| Empty {} : tree
+| Node : tree -> A -> tree -> tree
 
+namespace tree
+
+def mirror {A} : tree A -> tree A
+| Empty := Empty
+| (Node lt x rt) := Node (mirror rt) x (mirror lt)
+
+theorem mirror_mirror {A} (t : tree A) :
+  mirror (mirror t) = t
+:=
+begin
+induction t,
+unfold mirror,
+unfold mirror,
+rewrite [t_ih_a, t_ih_a_1]
+end
+
+def tree_map {A B : Type} (f : A -> B) : tree A -> tree B
+| Empty := Empty
+| (Node lt x rt) := Node (tree_map lt) (f x) (tree_map rt)
+
+theorem mirror_map_comm {A B} (t : tree A) (f : A -> B) :
+  tree_map f (mirror t) = mirror (tree_map f t)
+:=
+begin
+induction t,
+unfold mirror,
+unfold tree_map,
+unfold mirror,
+unfold mirror,
+unfold tree_map,
+rewrite t_ih_a,
+unfold mirror,
+rewrite t_ih_a_1,
+end
+
+end tree
 -------------------------------------------------------------------------------
 -- Definirajte nekaj konstruktov jezika IMP.
 
@@ -43,10 +115,26 @@ inductive loc : Type
 inductive kind : Type
 | AExp | BExp | Comm
 
+namespace kind
+
+inductive memory : Type
+| Null : memory
+| Cons : memory -> loc -> int -> memory
+
 -- Tip 'term' sprejme še vrsto terma. Ukazi so tako tipa `term Comm`.
 inductive term : kind -> Type
+| Int : int -> term AExp
+| Plus : term AExp -> term AExp -> term AExp
+| Bool : bool -> term BExp
+| Eq : term AExp -> term AExp -> term BExp
+| Update : loc -> term AExp -> term Comm
 
+-- theorem OwO (t1 t2 : term AExp) : -- Ni res, očitno
+--   t1 = t2
+-- := begin
+--   cases t1,
+--   cases t2,
+-- end
 
-
-
+end kind
 end hidden
