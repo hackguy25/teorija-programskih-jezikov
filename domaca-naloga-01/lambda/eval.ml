@@ -47,9 +47,15 @@ let rec eval_exp = function
       S.Pair (eval_exp e1, eval_exp e2)
   | S.Cons (eh, es) ->
       S.Cons (eval_exp eh, eval_exp es)
-  | S.Fst (S.Pair (e1, e2)) -> eval_exp e1
+  | S.Fst (S.Pair (e1, e2)) ->
+      let v1 = eval_exp e1
+      and _  = eval_exp e2
+      in v1
   | S.Fst _ -> failwith "Pair expected"
-  | S.Snd (S.Pair (e1, e2)) -> eval_exp e2
+  | S.Snd (S.Pair (e1, e2)) ->
+      let _  = eval_exp e1
+      and v2 = eval_exp e2
+      in v2
   | S.Snd _ -> failwith "Pair expected"
   | S.Match (e, e1, x, xs, e2) ->
       begin match eval_exp e with
@@ -102,13 +108,13 @@ let rec step = function
   | S.Cons (v1, v2) when is_value v2 && is_value v1 -> failwith "Expected a non-terminal expression"
   | S.Cons (v1, e2) when is_value v1 -> S.Cons (v1, step e2)
   | S.Cons (e1, e2) -> S.Cons (step e1, e2)
-  (*| S.Fst (S.Pair (v1, _)) when is_value v1 -> v1
-  | S.Fst (S.Pair (e1, e2)) -> S.Fst (S.Pair (step e1, e2))*)
-  | S.Fst (S.Pair (e1, _)) -> e1
+  | S.Fst (S.Pair (v1, v2)) when is_value v1 && is_value v2 -> v1
+  | S.Fst (S.Pair (v1, e2)) when is_value v1 -> S.Fst (S.Pair (v1, step e2))
+  | S.Fst (S.Pair (e1, e2)) -> S.Fst (S.Pair (step e1, e2))
   | S.Fst _ -> failwith "Pair expected"
-  (*| S.Snd (S.Pair (_, v2)) when is_value v2 -> v2
-  | S.Snd (S.Pair (e1, e2)) -> S.Snd (S.Pair (e1, step e2))*)
-  | S.Snd (S.Pair (_, e2)) -> e2
+  | S.Snd (S.Pair (v1, v2)) when is_value v1 && is_value v2 -> v2
+  | S.Snd (S.Pair (v1, e2)) when is_value v1 -> S.Snd (S.Pair (v1, step e2))
+  | S.Snd (S.Pair (e1, e2)) -> S.Snd (S.Pair (step e1, e2))
   | S.Snd _ -> failwith "Pair expected"
   | S.Match (S.Nil, e1, _, _, _) -> e1
   | S.Match (S.Cons (x, xs), _, y, ys, e2) -> S.subst [(y, x); (ys, xs)] e2
