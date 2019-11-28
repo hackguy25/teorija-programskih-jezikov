@@ -47,16 +47,16 @@ let rec eval_exp = function
       S.Pair (eval_exp e1, eval_exp e2)
   | S.Cons (eh, es) ->
       S.Cons (eval_exp eh, eval_exp es)
-  | S.Fst (S.Pair (e1, e2)) ->
-      let v1 = eval_exp e1
-      and _  = eval_exp e2
-      in v1
-  | S.Fst _ -> failwith "Pair expected"
-  | S.Snd (S.Pair (e1, e2)) ->
-      let _  = eval_exp e1
-      and v2 = eval_exp e2
-      in v2
-  | S.Snd _ -> failwith "Pair expected"
+  | S.Fst (e) ->
+      begin match eval_exp e with
+      | S.Pair(v1, _) -> v1
+      | _ -> failwith "Pair expected"
+      end
+  | S.Snd (e) ->
+      begin match eval_exp e with
+      | S.Pair(_, v2) -> v2
+      | _ -> failwith "Pair expected"
+      end
   | S.Match (e, e1, x, xs, e2) ->
       begin match eval_exp e with
       | S.Nil -> eval_exp e1
@@ -109,16 +109,15 @@ let rec step = function
   | S.Cons (v1, e2) when is_value v1 -> S.Cons (v1, step e2)
   | S.Cons (e1, e2) -> S.Cons (step e1, e2)
   | S.Fst (S.Pair (v1, v2)) when is_value v1 && is_value v2 -> v1
-  | S.Fst (S.Pair (v1, e2)) when is_value v1 -> S.Fst (S.Pair (v1, step e2))
-  | S.Fst (S.Pair (e1, e2)) -> S.Fst (S.Pair (step e1, e2))
-  | S.Fst _ -> failwith "Pair expected"
+  | S.Fst v when is_value v -> failwith "Pair expected"
+  | S.Fst e -> S.Fst (step e)
   | S.Snd (S.Pair (v1, v2)) when is_value v1 && is_value v2 -> v2
-  | S.Snd (S.Pair (v1, e2)) when is_value v1 -> S.Snd (S.Pair (v1, step e2))
-  | S.Snd (S.Pair (e1, e2)) -> S.Snd (S.Pair (step e1, e2))
-  | S.Snd _ -> failwith "Pair expected"
+  | S.Snd v when is_value v -> failwith "Pair expected"
+  | S.Snd e -> S.Snd (step e)
   | S.Match (S.Nil, e1, _, _, _) -> e1
-  | S.Match (S.Cons (x, xs), _, y, ys, e2) -> S.subst [(y, x); (ys, xs)] e2
-  | S.Match _ -> failwith "List Expected"
+  | S.Match (S.Cons (x, xs), _, y, ys, e2) when is_value x && is_value xs -> S.subst [(y, x); (ys, xs)] e2
+  | S.Match (v, e1, y, ys, e2) when is_value v -> failwith "List Expected"
+  | S.Match (e, e1, y, ys, e2) -> S.Match (step e, e1, y, ys, e2)
 
 
 let big_step e =
