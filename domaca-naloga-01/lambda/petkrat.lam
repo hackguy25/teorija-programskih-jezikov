@@ -1,0 +1,2 @@
+LET petkrat = FUN x -> x + x + x + x + x
+IN petkrat (petkrat (petkrat (petkrat (petkrat 2))))

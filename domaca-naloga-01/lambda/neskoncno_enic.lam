@@ -1,0 +1,7 @@
+LET neskoncno_enic = REC neskoncno_enic dummy -> 1 :: (neskoncno_enic dummy)
+IN LET sestej_n =
+    REC sestej_n l -> FUN n ->
+        MATCH l WITH
+            | [] -> 0
+            | x :: xs -> IF n = 0 THEN 0 ELSE x + (sestej_n xs (n - 1))
+IN sestej_n (neskoncno_enic 2) 3

@@ -47,12 +47,12 @@ let rec eval_exp = function
       S.Pair (eval_exp e1, eval_exp e2)
   | S.Cons (eh, es) ->
       S.Cons (eval_exp eh, eval_exp es)
-  | S.Fst (e) ->
+  | S.Fst e ->
       begin match eval_exp e with
       | S.Pair(v1, _) -> v1
       | _ -> failwith "Pair expected"
       end
-  | S.Snd (e) ->
+  | S.Snd e ->
       begin match eval_exp e with
       | S.Pair(_, v2) -> v2
       | _ -> failwith "Pair expected"
