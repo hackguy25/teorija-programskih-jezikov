@@ -1,0 +1,48 @@
+LET fib =
+    REC fib n ->
+        IF n > 1
+        THEN fib (n - 1) + fib (n - 2)
+        ELSE n
+IN LET drevo_lldl =
+    {
+        fib 12,
+        {
+            fib 6,
+            fib 9
+        }
+    }
+IN LET drevo_lld =
+    {
+        drevo_lldl,
+        fib 8
+    }
+IN LET drevo_ld =
+    {
+        fib 6,
+        {
+            fib 22,
+            fib 8
+        }
+    }
+IN LET drevo_l =
+    {
+        {
+            fib 11,
+            drevo_lld
+        },
+        drevo_ld
+    }
+IN LET drevo_d =
+    {
+        fib 10,
+        {
+            fib 18,
+            fib 7
+        }
+    }
+IN LET drevo =
+    {
+        drevo_l,
+        drevo_d
+    }
+IN FST (SND (FST drevo))

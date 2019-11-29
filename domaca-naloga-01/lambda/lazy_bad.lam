@@ -1,0 +1,5 @@
+LET final = FUN x -> FST x
+IN LET step = FUN x -> {FST x + SND x, FST x}
+IN LET step_3 = FUN x -> step (step (step x))
+IN LET step_3_3 = FUN x -> step_3 (step_3 (step_3 x))
+IN final (step_3_3 (step_3_3 {1, 1}))
