@@ -80,7 +80,7 @@ let rec is_value = function
   | S.IfThenElse _ | S.Apply _ | S.Fst _ | S.Snd _ | S.Match _-> false
 
 let rec step = function
-  | S.Var _ | S.Int _ | S.Bool _ | S.Lambda _ | S.RecLambda _ | S.Nil -> 
+  | S.Var _ | S.Int _ | S.Bool _ | S.Lambda _ | S.RecLambda _ | S.Nil ->
     failwith "Expected a non-terminal expression"
   | S.Plus (S.Int n1, S.Int n2) -> S.Int (n1 + n2)
   | S.Plus (S.Int n1, e2) -> S.Plus (S.Int n1, step e2)
@@ -115,7 +115,7 @@ let rec step = function
   | S.Snd (S.Pair (v1, v2)) when is_value v1 && is_value v2 -> v2
   | S.Snd e -> S.Snd (step e)
   | S.Match (S.Nil, e1, _, _, _) -> e1
-  | S.Match (S.Cons (v, vs), _, x, xs, e2) when is_value v && is_value vs -> 
+  | S.Match (S.Cons (v, vs), _, x, xs, e2) when is_value v && is_value vs ->
         S.subst [(x, v); (xs, vs)] e2
   | S.Match (e, e1, x, xs, e2) -> S.Match (step e, e1, x, xs, e2)
 

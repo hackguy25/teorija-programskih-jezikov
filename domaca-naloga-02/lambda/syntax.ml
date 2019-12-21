@@ -101,7 +101,7 @@ let string_of_exp = string_of_exp3
 type param = Param of int
 
 type ty =
-  | ParamTy of param 
+  | ParamTy of param
   | IntTy
   | BoolTy
   | ArrowTy of ty * ty

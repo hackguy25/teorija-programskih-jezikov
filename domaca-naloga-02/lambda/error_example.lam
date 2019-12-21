@@ -1,0 +1,1 @@
+IF ((TRUE :: []) {2, 4}) THEN 2 ELSE 3
