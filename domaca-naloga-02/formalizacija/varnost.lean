@@ -56,7 +56,7 @@ def subst : ident -> tm -> tm -> tm
     if (x = y) || (x = ys) then
       (tm.list_match (subst x e e0) (subst x e e1) y ys e2)
     else
-      (tm.list_match (subst x e e0) (subst x e e1) y ys (subst x e e2)) 
+      (tm.list_match (subst x e e0) (subst x e e1) y ys (subst x e e2))
 
 
 -- OPERATIONAL SEMANTICS
@@ -121,8 +121,8 @@ inductive step : tm -> tm -> Prop
 | list_match_nil {e1 x xs e2} :
     step (tm.list_match (tm.nil) e1 x xs e2) e1
 | list_match_cons {v vs e1 x xs e2} :
-    step 
-      (tm.list_match (tm.cons v vs) e1 x xs e2) 
+    step
+      (tm.list_match (tm.cons v vs) e1 x xs e2)
       (subst x v (subst xs vs e2))
 
 
@@ -268,21 +268,21 @@ begin
   case of.list_match {
     unfold subst,
     by_cases (x = H'_x),
-      subst h, 
+      subst h,
         simp,
-        apply of.list_match, 
+        apply of.list_match,
         apply H'_ih_a ctx_cons,
         apply H'_ih_a_1 ctx_cons,
         sorry,
       by_cases (x = H'_xs),
-        subst h, 
-          simp, 
+        subst h,
+          simp,
           apply of.list_match,
           apply H'_ih_a ctx_cons,
           apply H'_ih_a_1 ctx_cons,
           sorry,
-        dedup, 
-          simp [h], simp [h_1], 
+        dedup,
+          simp [h], simp [h_1],
           apply of.list_match,
           apply H'_ih_a ctx_cons,
           apply H'_ih_a_1 ctx_cons,
