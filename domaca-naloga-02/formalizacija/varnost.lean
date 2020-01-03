@@ -295,7 +295,39 @@ lemma weakening {Γ e A x B} :
     of Γ e A -> of (ctx.cons Γ x B) e A
 :=
 begin
-    sorry
+    intros Hstep,
+    cases e,
+    case tm.unit {
+        cases A,
+        apply of.unit,
+        repeat {cases Hstep},
+    },
+    case tm.true {
+        cases A,
+        repeat {cases Hstep},
+        apply of.true,
+        repeat {cases Hstep},
+    },
+    case tm.false {
+        cases A,
+        repeat {cases Hstep},
+        apply of.false,
+        repeat {cases Hstep},
+    },
+    case tm.nil {
+        cases A,
+        repeat {cases Hstep},
+        apply of.nil,
+        repeat {cases Hstep},
+    },
+    case tm.var {
+        apply of.var,
+        apply lookup.there,
+        sorry,
+        cases Hstep,
+        apply Hstep_a,
+    },
+    repeat {sorry},
 end
 
 
