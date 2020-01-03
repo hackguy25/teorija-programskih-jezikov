@@ -13,7 +13,7 @@ let rec infer_exp ctx = function
   | S.Bool _ ->
       S.BoolTy, []
   | S.Nil ->
-      S.ListTy (fresh_ty ()), [] (* TODO *)
+      S.ListTy (fresh_ty ()), []
   | S.Plus (e1, e2) | S.Minus (e1, e2) | S.Times (e1, e2) ->
       let t1, eqs1 = infer_exp ctx e1
       and t2, eqs2 = infer_exp ctx e2 in
